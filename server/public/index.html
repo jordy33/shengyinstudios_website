@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Shengyin Studios — Escucha</title>
+<meta name="description" content="Shengyin Studios — música original. Escucha en Spotify, Apple Music y YouTube.">
+
+<meta property="og:type" content="music.artist">
+<meta property="og:title" content="Shengyin Studios">
+<meta property="og:description" content="Shengyin Studios — música original">
+<meta property="og:url" content="https://shengyingstudios.armaddia.lat/">
+<meta property="og:image" content="https://shengyingstudios.armaddia.lat/logo.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="1600">
+<meta property="og:image:alt" content="Shengyin Studios">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shengyin Studios">
+<meta name="twitter:description" content="Shengyin Studios — música original">
+<meta name="twitter:image" content="https://shengyingstudios.armaddia.lat/logo.png">
+<style>
+  :root{
+    --bg:#000;
+    --fg:#f5efe6;
+    --muted:#9a8f80;
+    --copper:#c98b52;
+    --gold:#e8c88a;
+    --line:rgba(201,139,82,.28);
+    --card:rgba(255,255,255,.035);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:0 20px calc(28px + env(safe-area-inset-bottom));
+  }
+  .wrap{width:100%;max-width:420px}
+
+  /* Mismo hero que la landing de www: logo grande sobre negro, poco aire
+     arriba, y el tagline como etiqueta discreta. */
+  header{
+    text-align:center;
+    padding:28px 0 8px;
+    margin-bottom:22px;
+  }
+  /* The logo already contains the wordmark, so the visible <h1> is gone —
+     but it stays in the DOM (screen-reader only) for SEO and a11y. */
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+  .logo{
+    width:min(78vw,340px);height:auto;
+    display:block;margin:0 auto 14px;
+    filter:drop-shadow(0 0 48px rgba(201,139,82,.22));
+  }
+  .tag{
+    margin:0;color:var(--muted);
+    font-size:clamp(11px,3.2vw,13.5px);
+    letter-spacing:.2em;text-transform:uppercase;opacity:.75;
+  }
+
+  .links{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+
+  a.btn{
+    display:flex;align-items:center;gap:14px;
+    padding:15px 18px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--card);
+    color:var(--fg);text-decoration:none;
+    transition:border-color .18s ease,transform .12s ease,background .18s ease;
+    min-height:62px;
+  }
+  a.btn:active{transform:scale(.985)}
+  @media (hover:hover){ a.btn:hover{border-color:var(--copper);background:rgba(201,139,82,.08)} }
+
+  a.btn.primary{border-color:rgba(201,139,82,.5)}
+  a.btn.primary .label{color:var(--gold)}
+
+  .ico{
+    width:26px;height:26px;flex:0 0 26px;
+    display:grid;place-items:center;color:var(--copper);
+  }
+  .ico svg{width:22px;height:22px;fill:currentColor}
+
+  .txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .label{font-weight:600;font-size:15.5px;letter-spacing:.01em}
+  .sub{font-size:12.5px;color:var(--muted)}
+
+  .arrow{margin-left:auto;color:var(--muted);flex:0 0 auto;opacity:.55}
+  .arrow svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+  .btn.soon{opacity:.42;pointer-events:none;border-style:dashed}
+  .btn.soon .sub::after{content:" · soon";color:var(--copper)}
+
+  footer{
+    margin-top:34px;text-align:center;
+    color:var(--muted);font-size:11.5px;letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 class="sr-only">Shengyin Studios — Independent record label</h1>
+    <img class="logo" src="/logo-web.svg" alt="Shengyin Studios" width="340" height="340">
+    <p class="tag">Independent record label</p>
+  </header>
+
+  <nav class="links" id="links" aria-label="Streaming platforms"></nav>
+
+  <footer>© <span id="yr"></span> Shengyin Studios</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // UTM passthrough: a short links here as ?utm_source=tiktok&utm_content=hook-01
+  // and every click inherits that attribution, so the dashboard can answer
+  // "which short drove this".
+  var params = new URLSearchParams(location.search);
+  var utm = {
+    utm_source:   params.get('utm_source')   || '',
+    utm_medium:   params.get('utm_medium')   || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content:  params.get('utm_content')  || ''
+  };
+
+  var ICONS = {
+    spotify:  '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.6 14.4a.75.75 0 01-1 .25c-2.8-1.7-6.3-2.1-10.4-1.1a.75.75 0 11-.35-1.46c4.5-1.1 8.4-.6 11.5 1.3.35.2.45.66.25 1.01zm1.2-2.8a.94.94 0 01-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 01-.55-1.8c4.3-1.3 9.8-.7 13.5 1.6.45.27.6.85.25 1.3zm.1-2.9C14.2 8.4 8 8.2 4.4 9.3a1.12 1.12 0 11-.65-2.15C7.9 5.9 14.7 6.1 19 8.7a1.12 1.12 0 01-1.15 1.93z"/></svg>',
+    apple:    '<svg viewBox="0 0 24 24"><path d="M16.4 12.7c0-2.3 1.9-3.5 2-3.5-1.1-1.6-2.8-1.8-3.4-1.9-1.5-.1-2.8.9-3.6.9s-1.9-.9-3.2-.9c-1.6 0-3.2 1-4 2.5-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3.1 2.4 1.2-.05 1.7-.8 3.2-.8s1.9.8 3.2.75c1.3-.02 2.2-1.2 3-2.4.9-1.4 1.3-2.8 1.3-2.85-.03-.01-2.6-1-2.6-3.9zM14 5.6c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.65.75-1.2 1.95-1.05 3.1 1.1.1 2.25-.6 2.95-1.5z"/></svg>',
+    youtube:  '<svg viewBox="0 0 24 24"><path d="M23 12s0-3.4-.4-5c-.25-.95-1-1.7-1.95-1.95C19 4.6 12 4.6 12 4.6s-7 0-8.65.45c-.95.25-1.7 1-1.95 1.95C1 8.6 1 12 1 12s0 3.4.4 5c.25.95 1 1.7 1.95 1.95 1.65.45 8.65.45 8.65.45s7 0 8.65-.45c.95-.25 1.7-1 1.95-1.95.4-1.6.4-5 .4-5zM9.8 15.4V8.6l5.9 3.4-5.9 3.4z"/></svg>',
+    tiktok:   '<svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0115.54 3h-3.09v12.4a2.59 2.59 0 01-2.59 2.5 2.59 2.59 0 01-2.59-2.59 2.59 2.59 0 012.59-2.59c.27 0 .53.04.77.12v-3.2a5.8 5.8 0 00-.77-.05A5.79 5.79 0 004.07 15.4a5.79 5.79 0 005.79 5.79 5.79 5.79 0 005.79-5.79V9.01a7.35 7.35 0 004.28 1.36v-3.1a4.28 4.28 0 01-3.33-1.45z"/></svg>',
+    instagram:'<svg viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.8 3.8 0 01-1.38-.9 3.8 3.8 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 3.68a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zm0 10.16a4 4 0 110-8 4 4 0 010 8zm7.85-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>'
+  };
+
+  var ARROW = '<span class="arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>';
+
+  function track(link) {
+    var payload = {
+      link: link.id,
+      referrer: document.referrer || '',
+      utm_source: utm.utm_source, utm_medium: utm.utm_medium,
+      utm_campaign: utm.utm_campaign, utm_content: utm.utm_content
+    };
+    var body = JSON.stringify(payload);
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' }));
+      } else {
+        fetch('/api/click', {
+          method: 'POST', body: body, keepalive: true,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    } catch (e) { /* never block the navigation */ }
+  }
+
+  function render(links) {
+    var host = document.getElementById('links');
+    host.innerHTML = '';
+    links.forEach(function (link) {
+      var a = document.createElement('a');
+      a.className = 'btn' + (link.primary ? ' primary' : '') + (link.ready ? '' : ' soon');
+      a.href = link.ready ? link.url : '#';
+      if (link.ready) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.addEventListener('click', function () { track(link); });
+      } else {
+        a.setAttribute('aria-disabled', 'true');
+      }
+      a.innerHTML =
+        '<span class="ico">' + (ICONS[link.id] || '') + '</span>' +
+        '<span class="txt"><span class="label">' + link.label +
+        '</span><span class="sub">' + link.sub + '</span></span>' +
+        (link.ready ? ARROW : '');
+      host.appendChild(a);
+    });
+  }
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  fetch('/api/links')
+    .then(function (r) { return r.json(); })
+    .then(function (d) { render(d.links || []); })
+    .catch(function () { render([]); });
+})();
+</script>
+</body>
+</html>

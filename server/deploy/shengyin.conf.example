@@ -1,0 +1,21 @@
+# Shengyin Studios — supervisor config (TEMPLATE)
+#
+# Copy this to /etc/supervisor/conf.d/shengyin.conf and fill in the real
+# values. The real file is NOT in the repo: it holds database credentials
+# and the MCP token in plain text.
+#
+#   sudo cp /home/systemd/shengyin/deploy/shengyin.conf /etc/supervisor/conf.d/
+#   sudo supervisorctl reread && sudo supervisorctl update
+#
+# Then, after editing, load the changes with:
+#   sudo supervisorctl restart shengyin
+
+[program:shengyin]
+directory=/home/systemd/shengyin
+command=node src/server.js
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/shengyin.err.log
+stdout_logfile=/var/log/shengyin.out.log
+user=systemd
+environment=NODE_ENV="production",PORT="7008",DB_HOST="127.0.0.1",DB_PORT="3306",DB_USER="REPLACE_ME",DB_PASSWORD="REPLACE_ME",DB_NAME="shengyingstudios",MCP_TOKEN="REPLACE_WITH_openssl_rand_hex_32"

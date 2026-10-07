@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Shengyin Studios — Estadísticas</title>
+<style>
+  :root{
+    --bg:#0b0b0c; --fg:#f2ece3; --muted:#8d8377; --copper:#c98b52;
+    --gold:#e8c88a; --line:rgba(201,139,82,.22); --card:#141416;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    padding:28px 20px 60px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:19px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 4px;
+     background:linear-gradient(180deg,var(--gold),var(--copper));
+     -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+  .bar button{
+    background:var(--card);color:var(--fg);border:1px solid var(--line);
+    border-radius:9px;padding:7px 14px;font-size:13px;cursor:pointer
+  }
+  .bar button.on{border-color:var(--copper);color:var(--gold)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:26px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px}
+  .kpi .n{font-size:28px;font-weight:600;color:var(--gold);line-height:1.1}
+  .kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-top:5px}
+  section{margin-bottom:26px}
+  h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+     margin:0 0 10px;font-weight:600}
+  table{width:100%;border-collapse:collapse;background:var(--card);
+        border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{padding:10px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,.05)}
+  th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .meter{height:4px;background:rgba(201,139,82,.18);border-radius:3px;margin-top:6px;overflow:hidden}
+  .meter i{display:block;height:100%;background:linear-gradient(90deg,var(--copper),var(--gold))}
+  .empty{color:var(--muted);padding:22px;text-align:center;background:var(--card);
+         border:1px dashed var(--line);border-radius:12px;font-size:13.5px}
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;font-size:12.5px}
+  .note{color:var(--muted);font-size:12.5px;margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Shengyin Studios — Estadísticas</h1>
+  <p class="sub" id="sub">Cargando…</p>
+
+  <div class="bar" id="range">
+    <button data-d="7">7 días</button>
+    <button data-d="30" class="on">30 días</button>
+    <button data-d="90">90 días</button>
+    <button data-d="365">1 año</button>
+    <button id="reload" style="margin-left:auto">↻ Actualizar</button>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <h2>Histórico (desde el primer clic)</h2>
+    <div id="alltime"></div>
+  </section>
+
+  <section>
+    <h2>Por plataforma</h2>
+    <div id="byLink"></div>
+  </section>
+
+  <section>
+    <h2>De dónde vienen</h2>
+    <div id="byRef"></div>
+    <div class="note">El referrer dice desde qué red social llegaron. Es la señal para decidir dónde publicar más.</div>
+  </section>
+
+  <section>
+    <h2>Por video (utm_content)</h2>
+    <div id="byContent"></div>
+    <div class="note">
+      Etiqueta cada short con <code>?utm_source=tiktok&amp;utm_content=hook-01</code> al ponerlo en la bio
+      o en el link del video, y aquí verás exactamente qué video genera los clics.
+    </div>
+  </section>
+
+  <section>
+    <h2>Por día</h2>
+    <div id="byDay"></div>
+  </section>
+
+  <section>
+    <h2>Dispositivos</h2>
+    <div id="byDevice"></div>
+  </section>
+
+  <section>
+    <h2>Países</h2>
+    <div id="byCountry"></div>
+  </section>
+
+  <section>
+    <h2>Últimos 50 clics</h2>
+    <div id="recent"></div>
+  </section>
+
+  <section>
+    <h2>Para el bot / pipeline</h2>
+    <div class="note" style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px">
+      Los mismos datos en JSON, para automatización y análisis:<br><br>
+      <code>GET /api/stats?days=30</code> · ventana configurable de 1 a 365 días<br>
+      <code>GET /api/links</code> · catálogo de links y su estado<br>
+      <code>GET /healthz</code> · estado del servicio<br><br>
+      Autenticación (si el token está activo): header <code>X-Stats-Token</code>,
+      query <code>?token=…</code> o Basic auth con el token como contraseña.
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var token = new URLSearchParams(location.search).get('token') || '';
+  var days = 30;
+
+  function q(sel){ return document.querySelector(sel); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+
+  function table(cols, rows, render){
+    if (!rows || !rows.length) return '<div class="empty">Sin datos todavía</div>';
+    var max = 0;
+    rows.forEach(function(r){ var v = render(r).value; if (v > max) max = v; });
+    var h = '<table><thead><tr>' + cols.map(function(c,i){
+      return '<th' + (i ? ' style="text-align:right"' : '') + '>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function(r){
+      var c = render(r);
+      var pct = max ? Math.round((c.value / max) * 100) : 0;
+      h += '<tr><td>' + c.label +
+           (pct && rows.length > 1 ? '<div class="meter"><i style="width:' + pct + '%"></i></div>' : '') +
+           '</td><td class="num">' + c.value + '</td></tr>';
+    });
+    return h + '</tbody></table>';
+  }
+
+  function kpi(n, l){ return '<div class="kpi"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'; }
+
+  function draw(d){
+    var at = d.all_time || {};
+    q('#sub').textContent = 'Últimos ' + d.window_days + ' días · actualizado ' + new Date().toLocaleTimeString();
+
+    q('#kpis').innerHTML =
+      kpi(d.totals.clicks || 0, 'Clics') +
+      kpi(d.totals.visitors || 0, 'Visitantes únicos') +
+      kpi(d.totals.active_days || 0, 'Días con actividad') +
+      kpi(at.clicks || 0, 'Clics históricos');
+
+    q('#alltime').innerHTML = at.clicks
+      ? table(['Histórico','Valor'], [
+          { k: 'Primer clic', v: at.first_day || '—' },
+          { k: 'Último clic', v: at.last_day || '—' },
+          { k: 'Días con actividad', v: at.active_days || 0 },
+          { k: 'Clics totales', v: at.clicks }
+        ], function(r){ return { label: esc(r.k), value: r.v }; })
+      : '<div class="empty">Aún no hay clics registrados</div>';
+
+    q('#byLink').innerHTML = table(['Plataforma','Clics'], d.by_link, function(r){
+      return { label: esc(r.link_id) + ' <span style="color:var(--muted);font-size:12px">· ' + r.visitors + ' únicos</span>', value: r.clicks };
+    });
+
+    q('#byRef').innerHTML = table(['Origen','Clics'], d.by_referrer, function(r){
+      return { label: esc(r.referrer) + ' <span style="color:var(--muted);font-size:12px">· ' + r.visitors + ' únicos</span>', value: r.clicks };
+    });
+
+    q('#byContent').innerHTML = table(['Video','Clics'], d.by_content, function(r){
+      return { label: '<code>' + esc(r.content) + '</code> <span style="color:var(--muted);font-size:12px">' + esc(r.source || '—') + '</span>', value: r.clicks };
+    });
+
+    q('#byDay').innerHTML = table(['Día','Clics'], d.by_day, function(r){
+      return { label: esc(r.day) + ' <span style="color:var(--muted);font-size:12px">· ' + r.visitors + ' únicos</span>', value: r.clicks };
+    });
+
+    q('#byDevice').innerHTML = table(['Dispositivo','Clics'], d.by_device, function(r){
+      return { label: esc(r.device), value: r.clicks };
+    });
+
+    q('#byCountry').innerHTML = table(['País','Clics'], d.by_country, function(r){
+      return { label: esc(r.country), value: r.clicks };
+    });
+
+    q('#recent').innerHTML = table(['Clic','Detalle'], d.recent, function(r){
+      return { label: '<b>' + esc(r.link_id) + '</b> <span style="color:var(--muted);font-size:12px">'
+        + esc(r.ts.replace('T',' ').slice(0,19)) + ' · ' + esc(r.referrer || 'directo')
+        + ' · ' + esc(r.device || '?') + ' · ' + esc(r.country || '??')
+        + (r.utm_content ? ' · ' + esc(r.utm_content) : '') + '</span>', value: '' };
+    });
+  }
+
+  function load(){
+    var url = '/api/stats?days=' + days + (token ? '&token=' + encodeURIComponent(token) : '');
+    fetch(url).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(draw).catch(function(e){
+      q('#sub').textContent = 'Error: ' + e.message + (e.message === 'HTTP 401' ? ' — falta token' : '');
+    });
+  }
+
+  q('#range').addEventListener('click', function(e){
+    if (e.target.tagName !== 'BUTTON') return;
+    if (e.target.id === 'reload') { load(); return; }
+    days = Number(e.target.dataset.d);
+    [].forEach.call(this.querySelectorAll('button[data-d]'), function(b){
+      b.classList.toggle('on', b === e.target);
+    });
+    load();
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
